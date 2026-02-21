@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔥 RoastBot 3000</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0c0c0f;
+  --surface: #141418;
+  --card: #1a1a20;
+  --border: #2a2a35;
+  --fire1: #ff4500;
+  --fire2: #ff8c00;
+  --fire3: #ffd700;
+  --text: #f0ede8;
+  --muted: #6b6880;
+  --green: #22c55e;
+}
+
+* { cursor: none !important; }
+
+.cursor {
+  position: fixed; z-index: 9999; pointer-events: none;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: radial-gradient(circle, #ff4500, #ff8c00);
+  transform: translate(-50%, -50%);
+  transition: transform 0.08s ease, width 0.15s, height 0.15s;
+  mix-blend-mode: screen;
+  box-shadow: 0 0 20px #ff4500, 0 0 40px #ff8c0066;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Animated background */
+.bg-fire {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 600px 400px at 20% 80%, rgba(255,69,0,0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 300px at 80% 20%, rgba(255,140,0,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 300px 200px at 50% 50%, rgba(255,215,0,0.04) 0%, transparent 70%);
+  animation: bgShift 6s ease-in-out infinite alternate;
+}
+@keyframes bgShift {
+  from { opacity: 0.8; }
+  to { opacity: 1; filter: hue-rotate(15deg); }
+}
+
+/* Particle sparks */
+.spark {
+  position: fixed; pointer-events: none; z-index: 1;
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--fire2);
+  animation: sparkFloat linear forwards;
+}
+@keyframes sparkFloat {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-120px) scale(0); }
+}
+
+.app {
+  position: relative; z-index: 2;
+  max-width: 720px; margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
+}
+
+/* Header */
+header { text-align: center; margin-bottom: 3rem; }
+
+.logo-wrap {
+  display: inline-block;
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.logo {
+  font-family: 'Bangers', cursive;
+  font-size: 5rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  background: linear-gradient(180deg, #ffd700 0%, #ff8c00 40%, #ff4500 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 30px rgba(255,140,0,0.5));
+  animation: logoFlicker 3s ease-in-out infinite;
+}
+@keyframes logoFlicker {
+  0%,100% { filter: drop-shadow(0 0 30px rgba(255,140,0,0.5)); }
+  50%      { filter: drop-shadow(0 0 50px rgba(255,69,0,0.8)); }
+}
+
+.logo-badge {
+  position: absolute; top: -8px; right: -48px;
+  background: var(--fire1); color: #fff;
+  font-size: 0.6rem; font-weight: 700;
+  padding: 2px 8px; border-radius: 99px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  animation: badgePulse 1.5s ease-in-out infinite;
+}
+@keyframes badgePulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+
+.tagline {
+  color: var(--muted);
+  font-size: 0.9rem; font-style: italic;
+  margin-top: 0.5rem;
+}
+
+/* Form card */
+.form-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 0 0 1px rgba(255,69,0,0.08), 0 24px 60px rgba(0,0,0,0.5);
+  margin-bottom: 1.5rem;
+  animation: fadeUp 0.6s ease both;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+
+.form-title {
+  font-family: 'Bangers', cursive;
+  font-size: 1.4rem;
+  letter-spacing: 0.06em;
+  color: var(--fire2);
+  margin-bottom: 1.25rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.875rem;
+  margin-bottom: 0.875rem;
+}
+.field-full { grid-column: 1 / -1; }
+
+.field-group label {
+  display: block;
+  font-size: 0.7rem; font-weight: 700;
+  color: var(--muted); text-transform: uppercase;
+  letter-spacing: 0.1em; margin-bottom: 0.4rem;
+}
+
+input, select, textarea {
+  width: 100%;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  padding: 0.65rem 0.9rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--fire1);
+  box-shadow: 0 0 0 3px rgba(255,69,0,0.15);
+}
+input::placeholder, textarea::placeholder { color: var(--muted); }
+select option { background: #1a1a20; }
+textarea { resize: none; height: 80px; }
+
+/* Intensity slider */
+.intensity-wrap { margin-top: 0.875rem; }
+.intensity-label {
+  display: flex; justify-content: space-between;
+  font-size: 0.7rem; font-weight: 700;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+.intensity-val { color: var(--fire2); }
+
+input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  height: 6px; border-radius: 99px; padding: 0;
+  background: linear-gradient(90deg, var(--fire1), var(--fire2), var(--fire3));
+  border: none; box-shadow: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 10px var(--fire1);
+  cursor: none !important;
+}
+
+/* Roast button */
+.roast-btn {
+  width: 100%; margin-top: 1.25rem;
+  background: linear-gradient(135deg, var(--fire1), var(--fire2));
+  border: none; border-radius: 14px;
+  color: #fff;
+  font-family: 'Bangers', cursive;
+  font-size: 1.6rem; letter-spacing: 0.08em;
+  padding: 1rem;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 6px 24px rgba(255,69,0,0.4);
+  position: relative; overflow: hidden;
+}
+.roast-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--fire2), var(--fire3));
+  opacity: 0; transition: opacity 0.2s;
+}
+.roast-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(255,69,0,0.5); }
+.roast-btn:hover::before { opacity: 1; }
+.roast-btn:active { transform: scale(0.98); }
+.roast-btn span { position: relative; z-index: 1; }
+.roast-btn:disabled { opacity: 0.5; transform: none; }
+
+/* Result card */
+.result-card {
+  background: var(--card);
+  border: 1px solid rgba(255,69,0,0.3);
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 0 0 1px rgba(255,69,0,0.1), 0 24px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
+  display: none;
+  animation: fadeUp 0.5s ease;
+  position: relative; overflow: hidden;
+}
+.result-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--fire1), var(--fire2), var(--fire3), var(--fire2), var(--fire1));
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+@keyframes shimmer { from{background-position:200% 0} to{background-position:-200% 0} }
+
+.result-card.show { display: block; }
+
+.roast-header {
+  display: flex; align-items: center; gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.roast-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--fire1), var(--fire2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; flex-shrink: 0;
+  box-shadow: 0 0 20px rgba(255,69,0,0.4);
+}
+.roast-from { font-size: 0.75rem; color: var(--muted); font-weight: 500; }
+.roast-name { font-weight: 700; font-size: 0.95rem; color: var(--fire2); }
+
+.roast-text {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--text);
+  white-space: pre-wrap;
+  min-height: 60px;
+}
+
+/* Typing cursor */
+.typing-cursor {
+  display: inline-block;
+  width: 2px; height: 1.1em;
+  background: var(--fire2);
+  vertical-align: text-bottom;
+  animation: blink 0.7s step-end infinite;
+  margin-left: 2px;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+.result-actions {
+  display: flex; gap: 0.75rem; margin-top: 1.5rem;
+}
+.action-btn {
+  flex: 1;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  color: var(--text); font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem; font-weight: 700;
+  padding: 0.65rem;
+  transition: all 0.15s;
+}
+.action-btn:hover { border-color: var(--fire1); color: var(--fire1); }
+
+/* Rating bar */
+.burn-meter {
+  margin-top: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.875rem 1rem;
+}
+.burn-label {
+  font-size: 0.7rem; font-weight: 700;
+  color: var(--muted); text-transform: uppercase;
+  letter-spacing: 0.1em; margin-bottom: 0.6rem;
+  display: flex; justify-content: space-between;
+}
+.burn-track {
+  height: 8px; background: var(--border); border-radius: 99px; overflow: hidden;
+}
+.burn-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #ff8c00, #ff4500);
+  border-radius: 99px;
+  width: 0%;
+  transition: width 1.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* Loading */
+.loading {
+  display: none; text-align: center; padding: 2rem;
+}
+.loading.show { display: block; }
+.flame-loader {
+  font-size: 3rem;
+  animation: flameSpin 0.6s ease-in-out infinite alternate;
+  display: block; margin-bottom: 0.75rem;
+}
+@keyframes flameSpin {
+  from { transform: scale(0.9) rotate(-5deg); }
+  to   { transform: scale(1.1) rotate(5deg); }
+}
+.loading-text {
+  color: var(--muted); font-size: 0.875rem; font-style: italic;
+}
+
+/* Error */
+.error-msg {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 10px; padding: 0.875rem 1rem;
+  color: #f87171; font-size: 0.85rem;
+  margin-top: 1rem; display: none;
+}
+.error-msg.show { display: block; }
+
+/* Share toast */
+.share-toast {
+  position: fixed; bottom: 2rem; left: 50%;
+  transform: translateX(-50%) translateY(60px);
+  background: var(--green); color: #fff;
+  border-radius: 99px; padding: 0.65rem 1.5rem;
+  font-size: 0.85rem; font-weight: 700;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  z-index: 100;
+}
+.share-toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Intensity emojis */
+.intensity-emojis {
+  display: flex; justify-content: space-between;
+  font-size: 0.8rem; margin-top: 0.3rem;
+  color: var(--muted);
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="bg-fire"></div>
+<div class="share-toast" id="shareToast">🔥 Roast copied to clipboard!</div>
+
+<div class="app">
+  <header>
+    <div class="logo-wrap">
+      <div class="logo">RoastBot</div>
+      <div class="logo-badge">AI Powered</div>
+    </div>
+    <div style="font-family:'Bangers',cursive;font-size:2rem;letter-spacing:0.08em;color:var(--fire2)">3000 🔥</div>
+    <div class="tagline">Feed it your info. Watch it destroy you. Show your friends.</div>
+  </header>
+
+  <!-- Form -->
+  <div class="form-card">
+    <div class="form-title">👤 Tell us about yourself (so we can ruin you)</div>
+
+    <div class="fields">
+      <div class="field-group">
+        <label>Your Name</label>
+        <input type="text" id="name" placeholder="e.g. Ahmed" maxlength="30">
+      </div>
+      <div class="field-group">
+        <label>Age</label>
+        <input type="number" id="age" placeholder="e.g. 24" min="13" max="99">
+      </div>
+      <div class="field-group">
+        <label>Job / Profession</label>
+        <input type="text" id="job" placeholder="e.g. Freelance coder" maxlength="50">
+      </div>
+      <div class="field-group">
+        <label>City</label>
+        <input type="text" id="city" placeholder="e.g. Karachi" maxlength="40">
+      </div>
+      <div class="field-group field-full">
+        <label>Hobbies / Interests</label>
+        <input type="text" id="hobbies" placeholder="e.g. gaming, coding at 3am, eating ramen..." maxlength="100">
+      </div>
+      <div class="field-group field-full">
+        <label>A guilty confession (optional — makes it spicier 🌶️)</label>
+        <textarea id="confession" placeholder="e.g. I haven't finished a single side project..."></textarea>
+      </div>
+      <div class="field-group">
+        <label>Roast Style</label>
+        <select id="style">
+          <option value="comedian">🎤 Stand-up Comedian</option>
+          <option value="gordon">👨‍🍳 Gordon Ramsay</option>
+          <option value="shakespeare">📜 Shakespearean</option>
+          <option value="gen-z">💅 Gen Z Savage</option>
+          <option value="british">🎩 British Dry Wit</option>
+          <option value="rap">🎵 Rap Diss Track</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Language</label>
+        <select id="language">
+          <option value="English">🇬🇧 English</option>
+          <option value="Urdu">🇵🇰 Urdu</option>
+          <option value="Hinglish">🇮🇳 Hinglish</option>
+          <option value="Spanish">🇪🇸 Spanish</option>
+          <option value="French">🇫🇷 French</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="intensity-wrap">
+      <div class="intensity-label">
+        <span>🌶️ Roast Intensity</span>
+        <span class="intensity-val" id="intensityVal">Medium Heat</span>
+      </div>
+      <input type="range" id="intensity" min="1" max="5" value="3" oninput="updateIntensity()">
+      <div class="intensity-emojis">
+        <span>😊 Gentle</span><span>😅 Warm</span><span>🔥 Medium</span><span>💀 Brutal</span><span>☠️ Nuclear</span>
+      </div>
+    </div>
+
+    <button class="roast-btn" id="roastBtn" onclick="getRoast()">
+      <span>🔥 ROAST ME NOW 🔥</span>
+    </button>
+
+    <div class="error-msg" id="errorMsg"></div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading" id="loading">
+    <span class="flame-loader">🔥</span>
+    <div class="loading-text" id="loadingText">Preparing your destruction...</div>
+  </div>
+
+  <!-- Result -->
+  <div class="result-card" id="resultCard">
+    <div class="roast-header">
+      <div class="roast-avatar">🤖</div>
+      <div>
+        <div class="roast-from">Roasted by</div>
+        <div class="roast-name" id="roastStyleName">RoastBot 3000</div>
+      </div>
+    </div>
+    <div class="roast-text" id="roastText"></div>
+
+    <div class="burn-meter">
+      <div class="burn-label">
+        <span>🌡️ Burn Level</span>
+        <span id="burnPct">—</span>
+      </div>
+      <div class="burn-track"><div class="burn-fill" id="burnFill"></div></div>
+    </div>
+
+    <div class="result-actions">
+      <button class="action-btn" onclick="getRoast()">🔄 Roast Again</button>
+      <button class="action-btn" onclick="copyRoast()">📋 Copy Roast</button>
+      <button class="action-btn" onclick="shareRoast()">🔗 Share</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Cursor ─────────────────────────────────────────
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+  spawnSpark(e.clientX, e.clientY);
+});
+document.addEventListener('mousedown', () => { cursor.style.width='30px'; cursor.style.height='30px'; });
+document.addEventListener('mouseup', () => { cursor.style.width='20px'; cursor.style.height='20px'; });
+
+let sparkCount = 0;
+function spawnSpark(x, y) {
+  if (sparkCount++ % 4 !== 0) return;
+  const s = document.createElement('div');
+  s.className = 'spark';
+  s.style.cssText = `left:${x + (Math.random()-0.5)*16}px;top:${y}px;animation-duration:${0.5+Math.random()*0.6}s`;
+  document.body.appendChild(s);
+  setTimeout(() => s.remove(), 1100);
+}
+
+// ── Intensity ─────────────────────────────────────
+const labels = ['Gentle Warmth 🌞','Warming Up 😅','Medium Heat 🔥','Brutal Burn 💀','NUCLEAR ☠️'];
+function updateIntensity() {
+  const v = document.getElementById('intensity').value;
+  document.getElementById('intensityVal').textContent = labels[v-1];
+}
+
+// ── Roast Styles ──────────────────────────────────
+const styleNames = {
+  'comedian': '🎤 Stand-up Comedian',
+  'gordon': '👨‍🍳 Gordon Ramsay',
+  'shakespeare': '📜 Shakespeare',
+  'gen-z': '💅 Gen Z',
+  'british': '🎩 Lord of Dry Wit',
+  'rap': '🎵 Rap Battle AI'
+};
+
+const loadingLines = [
+  'Consulting the ancient scrolls of embarrassment...',
+  'Calculating your life choices...',
+  'Asking the roast council for permission...',
+  'Warming up the verbal flamethrower...',
+  'Preparing your soul for annihilation...',
+  'Gathering evidence from your past...',
+];
+
+let currentRoast = '';
+
+// ── Error Handling ────────────────────────────────
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = '⚠️ ' + msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 5000);
+}
+
+function validate() {
+  const name = document.getElementById('name').value.trim();
+  const age  = document.getElementById('age').value.trim();
+  const job  = document.getElementById('job').value.trim();
+  if (!name) { showError('We need your name to properly humiliate you.'); return false; }
+  if (!age)  { showError('How old are you? (We promise to use it against you.)'); return false; }
+  if (!job)  { showError('What do you do? We need ammo.'); return false; }
+  return true;
+}
+
+// ── Main Roast Function ───────────────────────────
+async function getRoast() {
+  if (!validate()) return;
+
+  const name       = document.getElementById('name').value.trim();
+  const age        = document.getElementById('age').value.trim();
+  const job        = document.getElementById('job').value.trim();
+  const city       = document.getElementById('city').value.trim();
+  const hobbies    = document.getElementById('hobbies').value.trim();
+  const confession = document.getElementById('confession').value.trim();
+  const style      = document.getElementById('style').value;
+  const intensity  = document.getElementById('intensity').value;
+  const language   = document.getElementById('language').value;
+
+  const intensityDesc = ['gentle and playful','moderately savage','properly brutal','absolutely ruthless','completely nuclear — no mercy whatsoever'][intensity-1];
+
+  const prompt = `You are RoastBot 3000, a savage AI roast master. Roast the following person in the style of a ${style} and in ${language} language. Be ${intensityDesc}. Make it personal, specific, and hilarious. Use their details creatively. Make it 4-6 sentences. Do NOT be offensive about race, religion, or anything truly harmful — keep it fun. End with one killer punchline.
+
+Person's details:
+- Name: ${name}
+- Age: ${age}
+- Job: ${job}
+${city ? `- City: ${city}` : ''}
+${hobbies ? `- Hobbies: ${hobbies}` : ''}
+${confession ? `- Guilty confession: ${confession}` : ''}
+
+Roast them NOW. No intro, no "Sure!", just the roast.`;
+
+  // UI
+  document.getElementById('roastBtn').disabled = true;
+  document.getElementById('resultCard').classList.remove('show');
+  document.getElementById('errorMsg').classList.remove('show');
+  document.getElementById('loading').classList.add('show');
+  document.getElementById('loadingText').textContent = loadingLines[Math.floor(Math.random()*loadingLines.length)];
+  document.getElementById('roastStyleName').textContent = styleNames[style];
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error?.message || `API error ${response.status}`);
+    }
+
+    const data = await response.json();
+    const roastText = data.content?.[0]?.text || 'The AI is speechless. You are THAT bad.';
+
+    currentRoast = roastText;
+
+    // Hide loading, show result
+    document.getElementById('loading').classList.remove('show');
+    document.getElementById('resultCard').classList.add('show');
+
+    // Typewriter effect
+    await typeWriter(roastText);
+
+    // Burn meter
+    const burnPct = Math.min(95, 30 + (intensity * 13) + Math.floor(Math.random()*15));
+    document.getElementById('burnPct').textContent = burnPct + '%';
+    setTimeout(() => {
+      document.getElementById('burnFill').style.width = burnPct + '%';
+    }, 200);
+
+  } catch(err) {
+    document.getElementById('loading').classList.remove('show');
+    // Error handling — show friendly message
+    if (err.message.includes('401') || err.message.includes('auth')) {
+      showError('API key issue — make sure you\'re running this through Claude.ai which handles auth automatically.');
+    } else if (err.message.includes('network') || err.message.includes('fetch')) {
+      showError('Network error! Check your connection and try again.');
+    } else if (err.message.includes('429')) {
+      showError('Too many roasts too fast! The AI needs a moment to catch its breath. Try again in a sec.');
+    } else {
+      showError('Something went wrong: ' + err.message);
+    }
+    console.error('RoastBot Error:', err);
+  } finally {
+    document.getElementById('roastBtn').disabled = false;
+  }
+}
+
+// ── Typewriter ────────────────────────────────────
+async function typeWriter(text) {
+  const el = document.getElementById('roastText');
+  el.innerHTML = '<span class="typing-cursor"></span>';
+  let i = 0;
+  return new Promise(resolve => {
+    const interval = setInterval(() => {
+      if (i < text.length) {
+        el.innerHTML = text.slice(0, ++i) + '<span class="typing-cursor"></span>';
+        // Auto scroll
+        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        el.innerHTML = text;
+        clearInterval(interval);
+        resolve();
+      }
+    }, 18);
+  });
+}
+
+// ── Actions ───────────────────────────────────────
+function copyRoast() {
+  if (!currentRoast) return;
+  navigator.clipboard.writeText(currentRoast).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = currentRoast; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy'); ta.remove();
+  });
+  const t = document.getElementById('shareToast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function shareRoast() {
+  const name = document.getElementById('name').value.trim() || 'someone';
+  const text = `🔥 RoastBot 3000 just destroyed ${name}:\n\n"${currentRoast}"\n\n— RoastBot 3000 AI`;
+  if (navigator.share) {
+    navigator.share({ title: '🔥 I got roasted by AI!', text }).catch(() => copyRoast());
+  } else {
+    copyRoast();
+  }
+}
+
+// ── Keyboard shortcut ────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.key === 'Enter') getRoast();
+});
+</script>
+</body>
+</html>
